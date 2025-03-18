@@ -211,7 +211,7 @@ vim.api.nvim_create_autocmd("FileType", {
 		highlight ClassDefinition guifg=#afafd7 gui=bold
 
 		" Important keywords across languages
-		syntax keyword ImportantKeyword if else for while do switch case default return break continue
+		syntax keyword ImportantKeyword if else for while do switch case default return break continue delete
 		syntax keyword ImportantKeyword try catch finally throw exception import export from as
 		syntax keyword ImportantKeyword public private protected static final const let var void
 		highlight ImportantKeyword guifg=#8787af gui=bold
@@ -255,3 +255,25 @@ vim.api.nvim_create_autocmd("FileType", {
 		]])
 	end
 })
+
+
+-- Define command to open current file with system default application
+vim.api.nvim_create_user_command('OpenFile', function()
+  local platform = vim.loop.os_uname().sysname
+  local open_command = (
+    platform == "Darwin" and "open" or
+    platform == "Linux" and "xdg-open" or
+    platform == "Windows_NT" and "start" or
+    nil
+  )
+
+  if open_command then
+    local file_path = vim.fn.expand('%:p')
+    vim.fn.jobstart(open_command .. ' ' .. vim.fn.shellescape(file_path), {detach = true})
+  else
+    print("Unsupported operating system")
+  end
+end, {})
+
+-- Optional key mapping
+vim.keymap.set('n', '<leader>o', ':OpenFile<CR>', {silent = true})
