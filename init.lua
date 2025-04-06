@@ -89,10 +89,6 @@ function _G.rg_complete(findstart, base)
 		directory
 		)
 
-		-- Debug: Print the command and base
-		print("Ripgrep Command: " .. rg_command)
-		print("Base: " .. base)
-
 		-- Run the ripgrep command and collect matches
 		local handle = io.popen(rg_command)
 		if not handle then
@@ -106,8 +102,6 @@ function _G.rg_complete(findstart, base)
 		end
 		handle:close()
 
-		-- Debug: Print the results
-		print("Results: " .. vim.inspect(result))
 
 		-- Deduplicate results, sort by shortest, and return them
 		local seen = {}
@@ -148,11 +142,11 @@ vim.api.nvim_set_keymap('i', '<C-Space>', '<C-x><C-u>', { noremap = true, silent
 -- Add this after your colorscheme is set
 vim.cmd([[
 " Define custom highlight groups for different statusline sections
-highlight StatusLineSection1 guibg=#3a3a3a guifg=#ffffff
+highlight StatusLineSection1 guibg=#3a3a3a guifg=#ffffff ctermbg=237 ctermfg=255
 " Middle section with black background
-highlight StatusLineMiddle guibg=#000000 guifg=#000000
+highlight StatusLineMiddle guibg=#000000 guifg=#000000 ctermbg=0 ctermfg=0
 " Right section for line numbers
-highlight StatusLineSection2 guibg=#3a3a3a guifg=#ffffff
+highlight StatusLineSection2 guibg=#3a3a3a guifg=#ffffff ctermbg=237 ctermfg=255
 
 " Set the statusline with different sections
 set statusline=
@@ -163,98 +157,98 @@ set statusline+=%#StatusLineMiddle#%=
 set statusline+=%#StatusLineSection2#\ %l:%c\ %P\ 
 ]])
 
-
 -- General enhanced syntax highlighting for LunaPerche theme
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = {"c", "cpp", "java", "javascript", "typescript", "python", "ruby", "go", "rust", "php", "lua", "swift", "kotlin", "csharp", "sh", "bash", "zsh", "perl"},
-	callback = function()
-		vim.cmd([[
+    pattern = {"c", "cpp", "java", "javascript", "typescript", "python", "ruby", "go", "rust", "php", "lua", "swift", "kotlin", "csharp", "sh", "bash", "zsh", "perl", "c3"},
+    callback = function()
+        vim.cmd([[
 
-		" Special comments with keywords
-		syntax keyword TodoComment TODO ISSUE NOTE BUG HACK WARNING XXX contained
-		highlight TodoComment guifg=#d787af gui=bold
+        " Special comments with keywords
+        syntax keyword TodoComment TODO ISSUE NOTE BUG HACK WARNING XXX contained
+        highlight TodoComment guifg=#d787af gui=bold ctermfg=175 cterm=bold
 
-		" Make special comments stand out in comments
-		syntax match Comment /\/\/.*/ contains=TodoComment
-		syntax match Comment /--.*/ contains=TodoComment
-		syntax match Comment /#.*/ contains=TodoComment
-		syntax region Comment start=/\/\*/ end=/\*\// contains=TodoComment
+        " Make special comments stand out in comments
+        syntax match Comment /\/\/.*/ contains=TodoComment
+        syntax match Comment /--.*/ contains=TodoComment
+        syntax match Comment /#.*/ contains=TodoComment
+        syntax region Comment start=/\/\*/ end=/\*\// contains=TodoComment
 
-		" Function definitions (works in many languages)
-		syntax match FunctionDefinition /\<\(\(function\|func\|def\|fn\|method\|sub\)\s\+\)\?\w\+\s*\ze(/
-		highlight FunctionDefinition guifg=#af87af gui=bold
+        " Function definitions (works in many languages)
+        syntax match FunctionDefinition /\<\(\(function\|func\|def\|fn\|method\|sub\)\s\+\)\?\w\+\s*\ze(/
+        highlight FunctionDefinition guifg=#af87af gui=bold ctermfg=139 cterm=bold
 
-		" Function calls (generic pattern)
-		syntax match FunctionCall /\<\w\+\>\ze\s*(/
-		highlight FunctionCall guifg=#d7afff
+        " Function calls (generic pattern)
+        syntax match FunctionCall /\<\w\+\>\ze\s*(/
+        highlight FunctionCall guifg=#d7afff ctermfg=183
 
-		" Strings - more vibrant
-		highlight String guifg=#af8787 gui=italic
+        " Strings - more vibrant
+        highlight String guifg=#af8787 gui=italic ctermfg=138 cterm=italic
 
-		" Numbers - make them stand out
-		highlight Number guifg=#d7afd7
+        " Numbers - make them stand out
+        highlight Number guifg=#d7afd7 ctermfg=182
 
-		" Constants and special values
-		syntax keyword SpecialConstant null nil none undefined true false NULL NIL None
-		highlight SpecialConstant guifg=#af87d7 gui=bold
+        " Constants and special values
+        syntax keyword SpecialConstant null nil none undefined true false NULL NIL None
+        highlight SpecialConstant guifg=#af87d7 gui=bold ctermfg=140 cterm=bold
 
-		" Brackets and parentheses
-		syntax match Brackets /[[\](){}]/
-		highlight Brackets guifg=#87afaf
+        " Brackets and parentheses
+        syntax match Brackets /[[\](){}]/
+        highlight Brackets guifg=#87afaf ctermfg=109
 
-		" Operators
-		syntax match Operators /[+\-*/%=<>!&|^~:;.,?]/
-		highlight Operators guifg=#d7d7af
+        " Operators
+        syntax match Operators /[+\-*/%=<>!&|^~:;.,?]/
+        highlight Operators guifg=#d7d7af ctermfg=187
 
-		" Class/type definitions (works in many OO languages)
-		syntax match ClassDefinition /\<\(class\|interface\|struct\|type\|enum\)\s\+\w\+/
-		highlight ClassDefinition guifg=#afafd7 gui=bold
+        " Class/type definitions (works in many OO languages)
+        syntax match ClassDefinition /\<\(class\|interface\|struct\|type\|enum\)\s\+\w\+/
+        highlight ClassDefinition guifg=#afafd7 gui=bold ctermfg=146 cterm=bold
 
-		" Important keywords across languages
-		syntax keyword ImportantKeyword if else for while do switch case default return break continue delete
-		syntax keyword ImportantKeyword try catch finally throw exception import export from as
-		syntax keyword ImportantKeyword public private protected static final const let var void
-		highlight ImportantKeyword guifg=#8787af gui=bold
+        " Important keywords across languages
+        syntax keyword ImportantKeyword if else for while do switch case default return break continue delete
+        syntax keyword ImportantKeyword try catch finally throw exception import export from as
+        syntax keyword ImportantKeyword public private protected static final const let var void
+        highlight ImportantKeyword guifg=#8787af gui=bold ctermfg=103 cterm=bold
 
-		" Self references in various languages
-		syntax keyword SelfReference self this super Me
-		highlight SelfReference guifg=#d787af gui=italic
+        " Self references in various languages
+        syntax keyword SelfReference self this super Me
+        highlight SelfReference guifg=#d787af gui=italic ctermfg=175 cterm=italic
 
-		" URLs in comments
-		syntax match UrlInComment /https\?:\/\/\(\w\+\(:\w\+\)\?@\)\?\([A-Za-z][-_0-9A-Za-z]*\.\)\{1,}\(\w\{2,}\.\?\)\{1,}\(:[0-9]\{1,5}\)\?\S*/ contained
-		highlight UrlInComment guifg=#afd7d7 gui=underline
+        " URLs in comments
+        syntax match UrlInComment /https\?:\/\/\(\w\+\(:\w\+\)\?@\)\?\([A-Za-z][-_0-9A-Za-z]*\.\)\{1,}\(\w\{2,}\.\?\)\{1,}\(:[0-9]\{1,5}\)\?\S*/ contained
+        highlight UrlInComment guifg=#afd7d7 gui=underline ctermfg=152 cterm=underline
 
-		" Simple property access (some.Thing with nothing after)
-		syntax match PropertyAccess /\<\w\+\(\.\w\+\)\+\>/ contains=PropertyPart
-		highlight PropertyAccess guifg=#afaf87 gui=italic
+        " Simple property access (some.Thing with nothing after)
+        syntax match PropertyAccess /\<\w\+\(\.\w\+\)\+\>/ contains=PropertyPart
+        highlight PropertyAccess guifg=#afaf87 gui=italic ctermfg=144 cterm=italic
 
-		" Property part after dot in simple property access
-		syntax match PropertyPart /\(\.\)\@<=\w\+/ contained
-		highlight PropertyPart guifg=#d7afaf gui=italic
+        " Property part after dot in simple property access
+        syntax match PropertyPart /\(\.\)\@<=\w\+/ contained
+        highlight PropertyPart guifg=#d7afaf gui=italic ctermfg=181 cterm=italic
 
-		" Array/index access after property (some.Thing[]) - without highlighting brackets
-		syntax match ArrayAccess /\<\w\+\(\.\w\+\)\+\ze\s*\[/
-		highlight ArrayAccess guifg=#d7d7af gui=bold
+        " Array/index access after property (some.Thing[]) - without highlighting brackets
+        syntax match ArrayAccess /\<\w\+\(\.\w\+\)\+\ze\s*\[/
+        highlight ArrayAccess guifg=#d7d7af gui=bold ctermfg=187 cterm=bold
 
-		" Method calls after property (some.Thing() - without highlighting parentheses
-		syntax match MethodCall /\<\w\+\(\.\w\+\)\+\ze\s*(/
-		highlight MethodCall guifg=#af87d7 gui=bold
+        " Method calls after property (some.Thing() - without highlighting parentheses
+        syntax match MethodCall /\<\w\+\(\.\w\+\)\+\ze\s*(/
+        highlight MethodCall guifg=#af87d7 gui=bold ctermfg=140 cterm=bold
 
 
-		" Add proper string highlighting that won't break with single quotes in comments
-		" Single quoted strings
-		syntax region String start=/'/ skip=/\\'/ end=/'/ 
-		" Double quoted strings
-		syntax region String start=/"/ skip=/\\"/ end=/"/ 
+        " Add proper string highlighting that won't break with single quotes in comments
+        " Single quoted strings
+        syntax region String start=/'/ skip=/\\'/ end=/'/ 
+        " Double quoted strings
+        syntax region String start=/"/ skip=/\\"/ end=/"/ 
 
-		" Make sure comments are processed first (higher priority)
-		syntax match Comment /\/\/.*/ contains=TodoComment,UrlInComment
-		syntax match Comment /--.*/ contains=TodoComment,UrlInComment
-		syntax match Comment /#.*/ contains=TodoComment,UrlInComment
-		syntax region Comment start=/\/\*/ end=/\*\// contains=TodoComment,UrlInComment
-		]])
-	end
+        " Make sure comments are processed first (higher priority)
+        syntax match Comment /\/\/.*/ contains=TodoComment,UrlInComment
+        syntax match Comment /--.*/ contains=TodoComment,UrlInComment
+        syntax match Comment /#.*/ contains=TodoComment,UrlInComment
+        syntax region Comment start=/\/\*/ end=/\*\// contains=TodoComment,UrlInComment
+        ]])
+    end
 })
+
 
 
 -- Define command to open current file with system default application
